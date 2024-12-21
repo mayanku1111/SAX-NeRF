@@ -348,7 +348,7 @@ class UNet(nn.Module):
 
 class Lineformer_no_encoder(nn.Module):
     def __init__(self, bound=0.2, num_layers=8, hidden_dim=256, skips=[4], out_dim=1, 
-                    last_activation="sigmoid", line_size=32, dim_head=32, heads=8, num_blocks = 1):
+                    last_activation="sigmoid", line_size=32, dim_head=32, heads=8, num_blocks = 1,unet_out_dim=3):
         super().__init__()
         self.nunm_layers = num_layers
         self.hidden_dim = hidden_dim
@@ -374,30 +374,19 @@ class Lineformer_no_encoder(nn.Module):
             raise NotImplementedError("Unknown last activation")
 
     def forward(self, x):
-        # stx()
-        '''
-            input: (N_rays x N_samples, 3)
-            经过encoder后变成: (N_rays x N_samples, 32) - (1024 * 192, 32)
-        '''
         
-        input_pts = x    # 就是x
-
-        for i in range(len(self.layers)):
+        x = self.unet(x)
+        for i in range(1,len(self.layers)):
 
             layer = self.layers[i]
-            activation = self.activations[i]
-
-            if i in self.skips:
-                x = torch.cat([input_pts, x], -1)
-
             x = layer(x)
-            x = activation(x)
-        
-        return x
+
+            x = self.activations[i-1](x) 
+         return x
 
 class Lineformer(nn.Module):
     def __init__(self, encoder, bound=0.2, num_layers=8, hidden_dim=256, skips=[4], out_dim=1, 
-                    last_activation="sigmoid", line_size=16, dim_head=32, heads=8, num_blocks = 1):
+                    last_activation="sigmoid", line_size=16, dim_head=32, heads=8, num_blocks = 1,unet_out_dim=3):
         super().__init__()
         self.nunm_layers = num_layers
         self.hidden_dim = hidden_dim
@@ -405,13 +394,14 @@ class Lineformer(nn.Module):
         self.bound = bound
         self.encoder = encoder
         self.in_dim = encoder.output_dim
+        self.unet = UNet(n_class=unet_out_dim)                
         
         # Linear layers
         # 实例化一些全连接层 —> 实例化一些Line_Attention_Block
         self.layers = nn.ModuleList(
-            [nn.Linear(self.in_dim, hidden_dim)] + [Line_Attention_Blcok(dim=hidden_dim, line_size=line_size, dim_head=dim_head, heads=heads, num_blocks = num_blocks) 
-            if i not in skips else nn.Linear(hidden_dim + self.in_dim, hidden_dim) for i in range(1, num_layers-1, 1)])
-        self.layers.append(nn.Linear(hidden_dim, out_dim))
+            [self.unet] + [Line_Attention_Blcok(dim=hidden_dim, line_size=line_size, dim_head=dim_head, heads=heads, num_blocks = num_blocks) 
+            for i in range(1, num_layers-1) if i not in skips]
+        )
 
         # Activations
         self.activations = nn.ModuleList([nn.LeakyReLU() for i in range(0, num_layers-1, 1)])
@@ -422,41 +412,16 @@ class Lineformer(nn.Module):
         else:
             raise NotImplementedError("Unknown last activation")
 
+    
     def forward(self, x):
-        # stx()
-        '''
-            input: (N_rays x N_samples, 3)
-            经过encoder后变成: (N_rays x N_samples, 32) - (1024 * 192, 32)
-        '''
-        
-        x = self.encoder(x, self.bound)     # encoder 把 x 从低维变成高维
-        
-        input_pts = x[..., :self.in_dim]    # 就是x
-
-        for i in range(len(self.layers)):
-
+        x = self.encoder(x, self.bound)
+        x = self.unet(x)
+        for i in range(1, len(self.layers)):
             layer = self.layers[i]
-            activation = self.activations[i]
-
-            if i in self.skips:
-                x = torch.cat([input_pts, x], -1)
-
             x = layer(x)
-            x = activation(x)
-        
+            x = self.activations[i-1](x)
+    
         return x
-
-
-'''配置文件中的实例参数
-    network:
-        net_type: mlp
-        num_layers: 4
-        hidden_dim: 32
-        skips: [2]
-        out_dim: 1
-        last_activation: sigmoid
-        bound: 0.3
-'''
 
 if __name__ == '__main__':
     from fvcore.nn import FlopCountAnalysis
