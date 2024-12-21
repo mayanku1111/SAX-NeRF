@@ -346,9 +346,6 @@ class UNet(nn.Module):
 
         return out
 
-
-
-
 class Lineformer_no_encoder(nn.Module):
     def __init__(self, bound=0.2, num_layers=8, hidden_dim=256, skips=[4], out_dim=1, 
                     last_activation="sigmoid", line_size=32, dim_head=32, heads=8, num_blocks = 1):
