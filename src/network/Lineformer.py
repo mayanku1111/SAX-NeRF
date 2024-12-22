@@ -374,15 +374,13 @@ class Lineformer_no_encoder(nn.Module):
             raise NotImplementedError("Unknown last activation")
 
     def forward(self, x):
-        
         x = self.unet(x)
-        for i in range(1,len(self.layers)):
-
+        for i in range(1, len(self.layers)):
             layer = self.layers[i]
             x = layer(x)
+            x = self.activations[i-1](x)
+        return x
 
-            x = self.activations[i-1](x) 
-         return x
 
 class Lineformer(nn.Module):
     def __init__(self, bound=0.2, num_layers=8, hidden_dim=256, skips=[4], out_dim=1, 
