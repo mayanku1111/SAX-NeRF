@@ -385,15 +385,14 @@ class Lineformer_no_encoder(nn.Module):
          return x
 
 class Lineformer(nn.Module):
-    def __init__(self, encoder, bound=0.2, num_layers=8, hidden_dim=256, skips=[4], out_dim=1, 
+    def __init__(self, bound=0.2, num_layers=8, hidden_dim=256, skips=[4], out_dim=1, 
                     last_activation="sigmoid", line_size=16, dim_head=32, heads=8, num_blocks = 1,unet_out_dim=3):
         super().__init__()
         self.nunm_layers = num_layers
         self.hidden_dim = hidden_dim
         self.skips = skips
         self.bound = bound
-        self.encoder = encoder
-        self.in_dim = encoder.output_dim
+        self.in_dim = hidden_dim
         self.unet = UNet(n_class=unet_out_dim)                
         
         # Linear layers
