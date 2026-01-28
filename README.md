@@ -7,9 +7,7 @@
 [![zhihu](https://img.shields.io/badge/知乎-解读-179bd3)](https://zhuanlan.zhihu.com/p/702702109)
 [![Youtube](https://img.shields.io/badge/Youtube-video-179bd3)](https://www.youtube.com/watch?v=oVVUaBY61eo)
 
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/structure-aware-sparse-view-x-ray-3d/novel-view-synthesis-on-x3d)](https://paperswithcode.com/sota/novel-view-synthesis-on-x3d?p=structure-aware-sparse-view-x-ray-3d)
-
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/structure-aware-sparse-view-x-ray-3d/low-dose-x-ray-ct-reconstruction-on-x3d)](https://paperswithcode.com/sota/low-dose-x-ray-ct-reconstruction-on-x3d?p=structure-aware-sparse-view-x-ray-3d)
+&nbsp;
 
 <h2> A Toolbox for Sparse-View X-ray 3D Reconstruction </h2> 
 
@@ -32,6 +30,8 @@ This repo is a comprehensive toolbox and library for X-ray 3D reconstruction inc
 
 
 ### News
+- **2025.09.18 :** Our new work [CARE](https://arxiv.org/abs/2506.02093) for diffusion based Anatomy-aware enhancement of sparse-view CT reconstruction has been accepted by NeurIPS 2025. Congrats to [Tianyu](https://lin-tianyu.github.io/). Code and models have been released at [this repo](https://github.com/MrGiovanni/CARE). 🍒
+- **2025.06.25 :** Our new work [X2-Gaussian](https://arxiv.org/abs/2503.21779) for dynamic human chest breathing CT reconstruction has been accepted by ICCV 2025. Congrats to [Weihao](https://yuyouxixi.github.io/). Code and models will be released at [this repo](https://github.com/yuyouxixi/x2-gaussian).  🚀
 - **2024.09.25 :** Our new work [R2-Gaussian](https://arxiv.org/abs/2405.20693v1) has been accepted by NeurIPS 2024. Congrats to [Ruyi](https://ruyi-zha.github.io/). Code and model will be released at [this repo](https://github.com/Ruyi-Zha/r2_gaussian). 💫 
 - **2024.09.01 :** Code of our ECCV 2024 work [X-Gaussian](https://github.com/caiyuanhao1998/X-Gaussian/) has been released. Welcome to have a try! 🚀
 - **2024.07.09 :** Our SAX-NeRF has been added to the [Awesome-Transformer-Attention](https://github.com/cmhungsteve/Awesome-Transformer-Attention/blob/main/README_2.md) collection 💫
@@ -74,6 +74,8 @@ This repo is a comprehensive toolbox and library for X-ray 3D reconstruction inc
 * [x] [SAX-NeRF](https://arxiv.org/abs/2311.10959) (CVPR 2024)
 * [x] [X-Gaussian](https://arxiv.org/abs/2403.04116) (ECCV 2024)
 * [x] [R2-Gaussian](https://arxiv.org/abs/2405.20693v1) (NeurIPS 2024)
+* [x] [X2-Gaussian](https://arxiv.org/abs/2503.21779) (ICCV 2025)
+* [x] [CARE](https://arxiv.org/abs/2506.02093) (NeurIPS 2025)
 * [x] [TensoRF](https://arxiv.org/abs/2203.09517) (ECCV 2022)
 * [x] [NAF](https://arxiv.org/abs/2209.14540) (MICCAI 2022)
 * [x] [NeAT](https://arxiv.org/abs/2202.02171) (ACM TOG 2022)
@@ -103,6 +105,13 @@ We recommend using [Conda](https://docs.conda.io/en/latest/miniconda.html) to se
 # Create environment
 conda create -n sax_nerf python=3.9
 conda activate sax_nerf
+
+# for users that don't have CUDA-11.3 on their server and
+# don't have sudo permission to install, please install CUDA-11.3 in conda environment
+# otherwise you can skip these steps
+conda install -c nvidia/label/cuda-11.3.1 cuda cudnn cuda-nvcc	# install CUDA-11.3 (and all needed pkg) for conda environment
+ln -s $CONDA_PREFIX/lib $CONDA_PREFIX/lib64	# softlink to solve a TIGRE version/path check issue
+conda install -c conda-forge gcc=10 gxx=10	# only support gcc <= 10
 
 # Install pytorch (hash encoder requires CUDA v11.3)
 pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
@@ -249,5 +258,21 @@ If this repo helps you, please consider citing our works:
   author={Ruyi Zha and Tao Jun Lin and Yuanhao Cai and Jiwen Cao and Yanhao Zhang and Hongdong Li},
   booktitle={NeurIPS},
   year={2024}
+}
+
+# X2-Gaussian
+@inproceedings{x2_gaussian,
+  title={X2-Gaussian: 4D Radiative Gaussian Splatting for Continuous-time Tomographic Reconstruction},
+  author={Yu, Weihao and Cai, Yuanhao and Zha, Ruyi and Fan, Zhiwen and Li, Chenxin and Yuan, Yixuan},
+  booktitle={ICCV},
+  year={2025}
+}
+
+# CARE
+@inproceedings{lin2025pixel,
+  title={Are Pixel-Wise Metrics Reliable for Sparse-View Computed Tomography Reconstruction?},
+  author={Lin, Tianyu and Li, Xinran and Zhuang, Chuntung and Chen, Qi and Cai, Yuanhao and Ding, Kai and Yuille, Alan L and Zhou, Zongwei},
+  booktitle={NeurIPS},
+  year={2025}
 }
 ```
